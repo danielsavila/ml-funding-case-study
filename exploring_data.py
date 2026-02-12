@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 np.random.seed(1)
 df = donation_data()
-test_set = donation_data(a = True)
+test = donation_data(a = True)
 df.columns
 
 sns.countplot(df, x = "payment_method")
@@ -19,11 +19,12 @@ plt.show()
 
 sns.scatterplot(df, x = "donation_id",
                 y = "donation_amount", 
-                hue = "payment_method")
+                hue = "payment_method",
+                size = "major_donor_flag")
 plt.show()
 
 sns.scatterplot(df, x = "year", 
                 y = "donation_amount", 
                 hue = "campaign_indicator", 
-                size = "campaign_indicator")
+                size = "major_donor_flag")
 plt.show()
