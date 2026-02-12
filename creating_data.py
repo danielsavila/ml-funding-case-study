@@ -61,7 +61,16 @@ def donation_data(a = False):
     for i in df["year"].unique():
         df.loc[(df["donation_date"] >= f"{i}-11-02") & (df["donation_date"] <= f"{i + 1}-1-15"), "campaign_indicator"] = np.random.binomial(1, .55)
 
+    # creating a "frequency/amount" score
+    # "major donor" flag since 2024 if donations > $10000
+    donor_mask = df[df["year"] < 2025].groupby(["donor_id", "year"], as_index = False)["donation_amount"].sum()
+    donor_mask["major_donor_flag"] = np.where(donor_mask["donation_amount"] > 10000, 1, 0)
+    donor_mask = donor_mask.drop("donation_amount", axis = 1)
+    df = pd.merge(df, donor_mask, on = ["donor_id", "year"], how = "left")
 
+    # cleaning all nan values
+    df.fillna(0, inplace = True)
+    
     # turn this on to create a test set with slight variation in amounts from chicago and san francisco
     if a:
         for i in range(len(df)):
