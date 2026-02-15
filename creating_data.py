@@ -29,7 +29,7 @@ def donation_data(a = False):
             amount = np.random.choice(np.arange(25, 2500))
             donation_amount.append(amount)
         elif value == "check":
-            amount =  np.random.choice(np.arange(2000, 7500))
+            amount =  np.random.choice(np.arange(4500, 7500))
             donation_amount.append(amount)
         elif value == "digital":
             amount = np.random.choice(np.arange(3000, 5000))
