@@ -2,11 +2,10 @@ from creating_data import donation_data
 import numpy as np
 import pandas as pd
 
-def cleaning_data():
-    df = donation_data()
+def cleaning_data(uncleaned_dataframe):
     
-    df["month"] = df["donation_date"].dt.month
-    df["day"] = df["donation_date"].dt.day
+    uncleaned_dataframe["month"] = uncleaned_dataframe["donation_date"].dt.month
+    uncleaned_dataframe["day"] = uncleaned_dataframe["donation_date"].dt.day
 
     # note that default is the following...
     # payment_method : 0 == "card"
@@ -14,13 +13,7 @@ def cleaning_data():
     # year : 0 == "2020"
     # month = : 0 == "1" i.e. January
     # day = : 0 == "1"
-    df = pd.get_dummies(df, columns = ["payment_method"], drop_first = True, dtype = int)
-    df = pd.get_dummies(df, columns = ["city"], drop_first = True, dtype = int)
-    df = pd.get_dummies(df, columns = ["year"], drop_first = True, dtype = int)
-    df = pd.get_dummies(df, columns = ["month"], drop_first = True, dtype = int)
-    df = pd.get_dummies(df, columns = ["day"], drop_first = True, dtype = int)
-
-    return df
-
-if __name__ == "__main__":
-    df = cleaning_data()
+    categorical_cols = ["payment_method", "city", "year", "month", "day"]
+    cleaned_df = pd.get_dummies(uncleaned_dataframe, columns=categorical_cols, drop_first=True, dtype=int)
+    
+    return cleaned_df

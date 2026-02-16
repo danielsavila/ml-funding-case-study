@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from cleaned_data import cleaning_data
+from creating_data import donation_data
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 from sklearn.model_selection import train_test_split
@@ -9,7 +10,7 @@ from IPython.display import display, HTML
 np.random.seed(10101)
 
 def regression_testing():
-    df = cleaning_data()
+    df = cleaning_data(donation_data())
 
     y = df["donation_amount"]
     X = df.drop(["donor_id", "donation_amount", "donation_id", "donation_date"], axis = 1)
