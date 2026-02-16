@@ -11,45 +11,32 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
 
+def visualizations(true, predicted, title):
+        plt.figure(figsize=(8, 6))
+        plt.scatter(true, predicted, alpha=0.6, color='blue', edgecolor='k')
+        plt.plot([true.min(), true.max()],
+                [true.min(), true.max()],
+                'r--', linewidth=2)  # reference line y=x
+        plt.xlabel('Actual Values')
+        plt.ylabel('Predicted Values')
+        plt.title(f'{title}')
+        plt.grid(True)
+        return plt.show()
+
 np.random.seed(13)
-test_set, _, X_train, X_test, y_train, y_test = regression_testing()
+model, X_train, X_test, y_train, y_test = regression_testing()
 
 # evaluating OLS on the training set
 ols = LinearRegression()
 ols = ols.fit(X_train, y_train)
 y_train_pred = ols.predict(X_train)
 print(f"ols training average mean error: ${round(np.sqrt(mean_squared_error(y_train, y_train_pred)), 2)}")
-
-plt.figure(figsize=(8, 6))
-plt.scatter(y_train, y_train_pred, alpha=0.6, color='blue', edgecolor='k')
-plt.plot([y_train.min(), y_train.max()],
-         [y_train.min(), y_train.max()],
-         'r--', linewidth=2)  # reference line y=x
-plt.xlabel('Actual Values')
-plt.ylabel('Predicted Values')
-plt.title('Predicted vs Actual Values, Train Set OLS')
-plt.grid(True)
-plt.show()
+visualizations(y_train, y_train_pred, 'Predicted vs Actual Values, Train Set OLS')
 
 # evaluating OLS on test set
 y_test_pred = ols.predict(X_test)
 print(f"ols test mean error: ${round(np.sqrt(mean_squared_error(y_test, y_test_pred)), 2)}")
-
-
-plt.figure(figsize=(8, 6))
-plt.scatter(y_test, y_test_pred, alpha=0.6, color='blue', edgecolor='k')
-plt.plot([y_test.min(), y_test.max()],
-         [y_test.min(), y_test.max()],
-         'r--', linewidth=2)  # reference line y=x
-plt.xlabel('Actual Values')
-plt.ylabel('Predicted Values')
-plt.title('Predicted vs Actual Values, Test Set OLS')
-plt.grid(True)
-plt.show()
-
-
-
-
+visualizations(y_test, y_test_pred, 'Predicted vs Actual Values, Test Set OLS')
 
 
 # random forest
@@ -64,8 +51,6 @@ output = GridSearchCV(rfmodel,
                       scoring = "neg_mean_squared_error", 
                       cv = 5, 
                       n_jobs = -1).fit(X_train, y_train)
-print(output.best_params_)
-
 rfmodel_trained = RandomForestRegressor(n_jobs = -1, 
                                         random_state = 1,
                                         criterion = "squared_error",
@@ -76,35 +61,12 @@ rfmodel_trained = RandomForestRegressor(n_jobs = -1,
                                              y_train)
 y_train_pred = rfmodel_trained.predict(X_train)
 print(f"random forest train mean error: ${round(np.sqrt(mean_squared_error(y_train, y_train_pred)), 2)}")
-
-plt.figure(figsize=(8, 6))
-plt.scatter(y_train, y_train_pred, alpha=0.6, color='blue', edgecolor='k')
-plt.plot([y_test.min(), y_test.max()],
-         [y_test.min(), y_test.max()],
-         'r--', linewidth=2)  # reference line y=x
-plt.xlabel('Actual Values')
-plt.ylabel('Predicted Values')
-plt.title('Predicted vs Actual Values, Train Set Random Forest')
-plt.grid(True)
-plt.show()
+visualizations(y_train, y_train_pred, 'Predicted vs Actual Values, Train Set Random Forest')
 
 
 y_test_pred = rfmodel_trained.predict(X_test)
 print(f"random forest test mean error: ${round(np.sqrt(mean_squared_error(y_test, y_test_pred)), 2)}")
-
-plt.figure(figsize=(8, 6))
-plt.scatter(y_test, y_test_pred, alpha=0.6, color='blue', edgecolor='k')
-plt.plot([y_test.min(), y_test.max()],
-         [y_test.min(), y_test.max()],
-         'r--', linewidth=2)  # reference line y=x
-plt.xlabel('Actual Values')
-plt.ylabel('Predicted Values')
-plt.title('Predicted vs Actual Values, Test Set Random Forest')
-plt.grid(True)
-plt.show()
-
-
-
+visualizations(y_test, y_test_pred, 'Predicted vs Actual Values, Test Set Random Forest')
 
 
 # models that did not make improvements relative to OLS
@@ -131,35 +93,11 @@ svr = SVR(C = output.best_params_["C"],
         kernel = output.best_params_["kernel"]).fit(X_train_scaled, y_train)
 y_train_pred = svr.predict(X_train_scaled)
 print(f"svr train mean error: ${round(np.sqrt(mean_squared_error(y_train, y_train_pred)), 2)}")
-
-plt.figure(figsize=(8, 6))
-plt.scatter(y_train, y_train_pred, alpha=0.6, color='blue', edgecolor='k')
-plt.plot([y_test.min(), y_test.max()],
-         [y_test.min(), y_test.max()],
-         'r--', linewidth=2)  # reference line y=x
-plt.xlabel('Actual Values')
-plt.ylabel('Predicted Values')
-plt.title('Predicted vs Actual Values, Train Set SVM')
-plt.grid(True)
-plt.show()
-
-
+visualizations(y_train, y_train_pred, 'Predicted vs Actual Values, Train Set SVM')
 
 y_test_pred = svr.predict(X_test_scaled)
 print(f"svr test mean error: ${round(np.sqrt(mean_squared_error(y_test, y_test_pred)), 2)}")
-
-
-plt.figure(figsize=(8, 6))
-plt.scatter(y_test, y_test_pred, alpha=0.6, color='blue', edgecolor='k')
-plt.plot([y_test.min(), y_test.max()],
-         [y_test.min(), y_test.max()],
-         'r--', linewidth=2)  # reference line y=x
-plt.xlabel('Actual Values')
-plt.ylabel('Predicted Values')
-plt.title('Predicted vs Actual Values, Test Set SVM')
-plt.grid(True)
-plt.show()
-
+visualizations(y_test, y_test_pred, 'Predicted vs Actual Values, Test Set SVM')
 
 # pickling random forest
 joblib.dump(rfmodel_trained, "rfmodel.pkl")
