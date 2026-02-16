@@ -1,4 +1,4 @@
-from ml_eval_linear_regression import regression_testing
+from ols_output import regression_testing
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
@@ -9,6 +9,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 import matplotlib.pyplot as plt
 import seaborn as sns
+import joblib
 
 np.random.seed(13)
 test_set, _, X_train, X_test, y_train, y_test = regression_testing()
@@ -160,8 +161,5 @@ plt.grid(True)
 plt.show()
 
 
-y_test.mean()
-y_test.median()
-658.88/y_test.median()
-
-np.mean(y_test_pred - y_test)
+# pickling random forest
+joblib.dump(rfmodel_trained, "rfmodel.pkl")

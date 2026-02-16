@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 
 def donation_data(a = False):
+    rng = np.random.default_rng()
     donation_id = np.linspace(1, 1000, 1000, dtype = int)
 
     donation_dates = pd.date_range(start="2020-03-15", end = "2026-03-03", freq = "D")
@@ -11,7 +12,7 @@ def donation_data(a = False):
     
     donor_id = np.random.randint(1, 75, size = 1000).astype(int)
 
-    payment_method = np.random.choice(["card", "check", "digital", "cash"], size = 1000, p = [.3, .3, .35, .05])
+    payment_method = np.random.choice(["card", "check", "digital/ACH", "cash"], size = 1000, p = [.3, .3, .35, .05])
 
     cities = ["Chicago", "New York", "San Francisco", "Milwaukee", "Detroit"]
     region = np.random.choice(cities, size = 1000, p = [.45, .15, .1, .2, .1])
@@ -26,16 +27,16 @@ def donation_data(a = False):
     for i in range(len(df)):
         value = df.loc[i, "payment_method"]
         if value == "card":
-            amount = np.random.choice(np.arange(25, 2500))
+            amount = round(np.random.choice(rng.poisson(1250, 100)) + np.random.choice(rng.normal(scale = 500, size = 100)))
             donation_amount.append(amount)
         elif value == "check":
-            amount =  np.random.choice(np.arange(4500, 7500))
+            amount =  round(np.random.choice(rng.normal(loc = 8000, scale = 1000, size = 600)))
             donation_amount.append(amount)
-        elif value == "digital":
-            amount = np.random.choice(np.arange(3000, 5000))
+        elif value == "digital/ACH":
+            amount = np.random.choice(rng.normal(loc = 4000, scale = 1000, size = 100))
             donation_amount.append(amount)
         else:
-            amount = np.random.choice(np.arange(500))
+            amount = round(np.random.choice(rng.normal(loc = 250, scale = 100, size = 75)))
             donation_amount.append(amount)
 
     df["donation_amount"] = donation_amount
@@ -62,7 +63,7 @@ def donation_data(a = False):
         df.loc[(df["donation_date"] >= f"{i}-11-02") & (df["donation_date"] <= f"{i + 1}-1-15"), "campaign_indicator"] = np.random.binomial(1, .55)
 
     # creating a "frequency/amount" score
-    # "major donor" flag since 2024 if donations > $10000
+    # "major donor" flag if donations before 2024 > $10000
     donor_mask = df[df["year"] < 2025].groupby(["donor_id", "year"], as_index = False)["donation_amount"].sum()
     donor_mask["major_donor_flag"] = np.where(donor_mask["donation_amount"] > 10000, 1, 0)
     donor_mask = donor_mask.drop("donation_amount", axis = 1)
