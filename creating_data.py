@@ -27,16 +27,16 @@ def donation_data(a = False):
     for i in range(len(df)):
         value = df.loc[i, "payment_method"]
         if value == "card":
-            amount = round(np.random.choice(rng.poisson(1250, 100)) + np.random.choice(rng.normal(scale = 500, size = 100)))
+            amount = round(np.random.choice(rng.poisson(1250, 100)) + np.random.choice(rng.normal(scale = 100, size = 100)))
             donation_amount.append(amount)
         elif value == "check":
-            amount =  round(np.random.choice(rng.normal(loc = 8000, scale = 1000, size = 600)))
+            amount =  round(np.random.choice(rng.normal(loc = 8000, scale = 500, size = 600)))
             donation_amount.append(amount)
         elif value == "digital/ACH":
-            amount = np.random.choice(rng.normal(loc = 4000, scale = 1000, size = 100))
+            amount = np.random.choice(rng.normal(loc = 4000, scale = 200, size = 100))
             donation_amount.append(amount)
         else:
-            amount = round(np.random.choice(rng.normal(loc = 250, scale = 100, size = 75)))
+            amount = round(np.random.choice(rng.normal(loc = 250, scale = 20, size = 75)))
             donation_amount.append(amount)
 
     df["donation_amount"] = donation_amount
@@ -65,7 +65,7 @@ def donation_data(a = False):
     # creating a "frequency/amount" score
     # "major donor" flag if donations before 2024 > $10000
     donor_mask = df[df["year"] < 2025].groupby(["donor_id", "year"], as_index = False)["donation_amount"].sum()
-    donor_mask["major_donor_flag"] = np.where(donor_mask["donation_amount"] > 10000, 1, 0)
+    donor_mask["major_donor_flag"] = np.where(donor_mask["donation_amount"] > 10000, 1, 0).astype(int)
     donor_mask = donor_mask.drop("donation_amount", axis = 1)
     df = pd.merge(df, donor_mask, on = ["donor_id", "year"], how = "left")
 
